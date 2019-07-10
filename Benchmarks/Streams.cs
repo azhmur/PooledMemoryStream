@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Order;
 using BetterStreams;
 using LocalsInit;
+using Microsoft.IO;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ namespace Benchmarks
 
         private byte[] data2;
 
+        private RecyclableMemoryStreamManager memoryManager;
+
         [Params(20, 10_000, 100_000)]
         public int Length;
 
@@ -29,6 +32,7 @@ namespace Benchmarks
         {
             this.data = new byte[this.Length];
             this.data2 = new byte[this.Length];
+            this.memoryManager = new RecyclableMemoryStreamManager();
         }
 
         [Benchmark]
@@ -92,6 +96,18 @@ namespace Benchmarks
         public void PooledMemoryStream()
         {
             using (var stream = new PooledMemoryStream())
+            {
+                for (int position = 0; position < this.Length; position += blockSize)
+                {
+                    stream.Write(this.data, position, Math.Min(blockSize, this.Length - position));
+                }
+            }
+        }
+
+        [Benchmark]
+        public void RecyclableMemoryStream()
+        {
+            using (var stream = new RecyclableMemoryStream(this.memoryManager))
             {
                 for (int position = 0; position < this.Length; position += blockSize)
                 {
