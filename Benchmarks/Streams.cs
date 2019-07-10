@@ -1,10 +1,12 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using BetterStreams;
+using LocalsInit;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Benchmarks
@@ -19,7 +21,7 @@ namespace Benchmarks
 
         private byte[] data2;
 
-        [Params(10_000, 100_000, 1_000_000)]
+        [Params(20, 10_000, 100_000)]
         public int Length;
 
         [GlobalSetup]
@@ -37,14 +39,39 @@ namespace Benchmarks
         }
 
         [Benchmark]
+        public unsafe void Native()
+        {
+            var native = Marshal.AllocHGlobal(this.Length);
+
+            fixed (void* dataPtr = this.data)
+            {
+                Buffer.MemoryCopy(dataPtr, (void*)native, this.Length, this.Length);
+            }
+
+            Marshal.FreeHGlobal(native);
+        }
+
+        [Benchmark]
+        public void StackAlloc()
+        {
+            Span<byte> data = stackalloc byte[this.Length];
+            this.data.AsSpan().CopyTo(data);
+        }
+
+        [Benchmark]
+        [LocalsInit(false)]
+        public void StackAllocWithoutLocalsInit()
+        {
+            Span<byte> data = stackalloc byte[this.Length];
+            this.data.AsSpan().CopyTo(data);
+        }
+
+        [Benchmark]
         public void ArrayPool()
         {
             var array = ArrayPool<byte>.Shared.Rent(this.Length);
 
-            for (int position = 0; position < this.Length; position += blockSize)
-            {
-                Buffer.BlockCopy(this.data, position, array, position, Math.Min(blockSize, this.Length - position));
-            }
+            Buffer.BlockCopy(this.data, 0, array, 0, this.Length);
 
             ArrayPool<byte>.Shared.Return(array);
         }
