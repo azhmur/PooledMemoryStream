@@ -17,9 +17,13 @@ namespace BetterStreams
         {
         }
 
-        public PooledMemoryStream(ArrayPool<byte> arrayPool)
+        public PooledMemoryStream(ArrayPool<byte> arrayPool, int capacity = 0)
         {
             this.pool = arrayPool ?? throw new ArgumentNullException(nameof(arrayPool));
+            if (capacity > 0)
+            {
+                this.data = this.pool.Rent(capacity);
+            }  
         }
 
         public override bool CanRead => true;
