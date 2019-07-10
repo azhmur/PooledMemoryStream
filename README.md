@@ -1,3 +1,5 @@
+![Alt text](perf.png?raw=true "Perf")
+
 ``` ini
 
 BenchmarkDotNet=v0.11.5, OS=Windows 10.0.18362
