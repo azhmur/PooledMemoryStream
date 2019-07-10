@@ -36,10 +36,10 @@ namespace Benchmarks
         }
 
         [Benchmark]
-        public void Array()
+        public void NewArray()
         {
             var array = new byte[this.Length];
-            this.data.CopyTo(array, 0);
+            Buffer.BlockCopy(array, 0, array, 0, this.Length);
         }
 
         [Benchmark]

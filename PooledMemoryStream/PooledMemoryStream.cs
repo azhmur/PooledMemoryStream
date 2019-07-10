@@ -7,6 +7,8 @@ namespace BetterStreams
 {
     public sealed class PooledMemoryStream : Stream
     {
+        private const float overexpansionFactor = 2;
+
         private byte[] data;
         private int length;
         private ArrayPool<byte> pool;
@@ -128,7 +130,7 @@ namespace BetterStreams
 
             if (this.Capacity - this.Position < count)
             {
-                this.SetCapacity((int)this.Position + count);
+                this.SetCapacity((int)(overexpansionFactor * (this.Position + count)));
             }
 
             Buffer.BlockCopy(buffer, offset, this.data, (int)this.Position, count);
