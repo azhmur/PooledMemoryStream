@@ -92,6 +92,8 @@ namespace BetterStreams
             }
 
             Buffer.BlockCopy(buffer, offset, this.data, (int)this.Position, count);
+
+            this.Position += count; 
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
