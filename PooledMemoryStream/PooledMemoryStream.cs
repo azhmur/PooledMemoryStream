@@ -59,6 +59,11 @@ namespace BetterStreams
         {
             this.AssertNotDisposed();
 
+            if (count == 0)
+            {
+                return 0;
+            }
+
             var available = Math.Min(count, this.Length - this.Position);
             Array.Copy(this.data, this.Position, buffer, offset, available);
             this.Position += available;
@@ -92,9 +97,14 @@ namespace BetterStreams
                     return this.Position;
 
                 case SeekOrigin.End:
-                    if (this.Length + offset < 0 || this.Length + offset > this.Capacity)
+                    if (this.Length + offset < 0)
                     {
                         throw new ArgumentOutOfRangeException(nameof(offset));
+                    }
+
+                    if (this.Length + offset > this.Capacity)
+                    {
+                        this.SetCapacity((int)(this.Length + offset));
                     }
 
                     this.Position = this.Length + offset;
@@ -121,12 +131,21 @@ namespace BetterStreams
             }
 
             this.length = (int)value;
+            if (this.Position > this.Length)
+            {
+                this.Position = this.Length;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Write(byte[] buffer, int offset, int count)
         {
             this.AssertNotDisposed();
+
+            if (count == 0)
+            {
+                return;
+            }
 
             if (this.Capacity - this.Position < count)
             {
@@ -146,7 +165,7 @@ namespace BetterStreams
 
             AssertNotDisposed();
 
-            stream.Write(this.data, (int)this.Position, (int)(this.Length - this.Position));
+            stream.Write(this.data, 0, (int)this.Length);
         }
 
 #if NETCOREAPP
