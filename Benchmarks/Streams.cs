@@ -123,6 +123,15 @@ namespace Benchmarks
         }
 
         [Benchmark()]
+        public void CopyByteLoop()
+        {
+            for (int i = 0; i < this.Length; ++i)
+            {
+                this.data2[i] = this.data[i];
+            }
+        }
+
+        [Benchmark()]
         public void Fill()
         {
             this.data.AsSpan().Fill(1);
