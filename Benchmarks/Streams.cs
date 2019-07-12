@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using Aethon.IO;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using BetterStreams;
 using LocalsInit;
@@ -84,6 +85,18 @@ namespace Benchmarks
         public void MemoryStream()
         {
             using (var stream = new MemoryStream())
+            {
+                for (int position = 0; position < this.Length; position += blockSize)
+                {
+                    stream.Write(this.data, position, Math.Min(blockSize, this.Length - position));
+                }
+            }
+        }
+
+        [Benchmark]
+        public void SmallBlockMemoryStream()
+        {
+            using (var stream = new SmallBlockMemoryStream())
             {
                 for (int position = 0; position < this.Length; position += blockSize)
                 {

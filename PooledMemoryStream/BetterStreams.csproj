@@ -3,6 +3,12 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <TargetFrameworks>netstandard2.0;netcoreapp2.1;net452</TargetFrameworks>
+    <PackageId>PooledMemoryStream</PackageId>
+    <Authors>Anatoly Zhmur</Authors>
+    <Company />
+    <Product />
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>MemoryStream alternative using ArrayPool instead of GC new. In LOH sizes brings tenths time improvements.</Description>
   </PropertyGroup>
 
   <ItemGroup>
