@@ -9,6 +9,10 @@
     <Product />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>MemoryStream alternative using ArrayPool instead of GC new. In LOH sizes brings tenths time improvements.</Description>
+    <PackageProjectUrl>https://github.com/azhmur/PooledMemoryStream</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/azhmur/PooledMemoryStream</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
