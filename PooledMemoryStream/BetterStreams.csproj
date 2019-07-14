@@ -12,7 +12,8 @@
     <PackageProjectUrl>https://github.com/azhmur/PooledMemoryStream</PackageProjectUrl>
     <RepositoryUrl>https://github.com/azhmur/PooledMemoryStream</RepositoryUrl>
     <RepositoryType>github</RepositoryType>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
+    <PackageTags>MemoryStream, ArrayPool, Pool</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
