@@ -14,6 +14,8 @@
     </PackageReference>
     <PackageReference Include="LocalsInit.Fody" Version="0.1.0" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
+    <PackageReference Include="ObjectLayoutInspector" Version="0.1.1" />
+    <PackageReference Include="PooledStream" Version="0.1.0" />
     <PackageReference Include="SmallBlockMemoryStream" Version="1.0.0" />
   </ItemGroup>
 

@@ -118,6 +118,18 @@ namespace Benchmarks
         }
 
         [Benchmark]
+        public void PoolStream()
+        {
+            using (var stream = new PooledStream.PooledMemoryStream())
+            {
+                for (int position = 0; position < this.Length; position += blockSize)
+                {
+                    stream.Write(this.data, position, Math.Min(blockSize, this.Length - position));
+                }
+            }
+        }
+
+        [Benchmark]
         public void RecyclableMemoryStream()
         {
             using (var stream = new RecyclableMemoryStream(this.memoryManager))

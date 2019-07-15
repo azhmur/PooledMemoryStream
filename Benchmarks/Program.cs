@@ -2,6 +2,8 @@
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
+using BetterStreams;
+using ObjectLayoutInspector;
 using System;
 
 namespace Benchmarks
