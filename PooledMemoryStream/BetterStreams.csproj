@@ -8,11 +8,12 @@
     <Company />
     <Product />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>MemoryStream alternative using ArrayPool instead of GC new. In LOH sizes brings tenths time improvements.</Description>
+    <Description>MemoryStream alternative using array pool instead of GC new. Best used for LOH sized streams. Look at benchmarks on github for details.</Description>
     <PackageProjectUrl>https://github.com/azhmur/PooledMemoryStream</PackageProjectUrl>
     <RepositoryUrl>https://github.com/azhmur/PooledMemoryStream</RepositoryUrl>
     <RepositoryType>github</RepositoryType>
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
+    <PackageTags>MemoryStream, ArrayPool, Pool</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
