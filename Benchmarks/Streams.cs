@@ -25,7 +25,9 @@ namespace Benchmarks
 
         private RecyclableMemoryStreamManager memoryManager;
 
-        [Params(20, 10_000, 100_000)]
+        private object o;
+
+        [Params(24, 10_000, 100_000)]
         public int Length;
 
         [GlobalSetup]
@@ -37,46 +39,60 @@ namespace Benchmarks
         }
 
         [Benchmark]
-        public void NewArray()
+        public void NewComplexObject()
         {
-            var array = new byte[this.Length];
-            Buffer.BlockCopy(array, 0, array, 0, this.Length);
+            for (int i = 0; i < Length / 24; ++i)
+            {
+                var complex = new Complex();
+                complex.Dispose();
+            }
         }
 
         [Benchmark]
+        public void NewObject()
+        {
+            for (int i = 0; i < Length / 24; ++i)
+            {
+                this.o = new object();
+            }
+        }
+
+        [Benchmark]
+        [BenchmarkCategory("Basic")]
+        public void NewArray()
+        {
+            var array = new byte[this.Length];
+        }
+
+        [Benchmark]
+        [BenchmarkCategory("Basic")]
         public unsafe void Native()
         {
             var native = Marshal.AllocHGlobal(this.Length);
-
-            fixed (void* dataPtr = this.data)
-            {
-                Buffer.MemoryCopy(dataPtr, (void*)native, this.Length, this.Length);
-            }
 
             Marshal.FreeHGlobal(native);
         }
 
         [Benchmark]
+        [BenchmarkCategory("Basic")]
         public void StackAlloc()
         {
             Span<byte> data = stackalloc byte[this.Length];
-            this.data.AsSpan().CopyTo(data);
         }
 
         [Benchmark]
         [LocalsInit(false)]
+        [BenchmarkCategory("Basic")]
         public void StackAllocWithoutLocalsInit()
         {
             Span<byte> data = stackalloc byte[this.Length];
-            this.data.AsSpan().CopyTo(data);
         }
 
         [Benchmark]
+        [BenchmarkCategory("Basic")]
         public void ArrayPool()
         {
             var array = ArrayPool<byte>.Shared.Rent(this.Length);
-
-            Buffer.BlockCopy(this.data, 0, array, 0, this.Length);
 
             ArrayPool<byte>.Shared.Return(array);
         }
@@ -141,7 +157,7 @@ namespace Benchmarks
             }
         }
 
-        [Benchmark(Baseline = true)]
+        [Benchmark()]
         public void Copy()
         {
             Buffer.BlockCopy(this.data, 0, this.data2, 0, this.Length);
@@ -156,10 +172,24 @@ namespace Benchmarks
             }
         }
 
-        [Benchmark()]
+        [Benchmark(Baseline = true)]
+        [BenchmarkCategory("Basic")]
         public void Fill()
         {
             this.data.AsSpan().Fill(1);
+        }
+
+        private class Complex
+        {
+            public void Dispose()
+            {
+                GC.SuppressFinalize(this);
+            }
+
+            ~Complex()
+            {
+                var i = 1;
+            }
         }
     }
 }
