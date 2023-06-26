@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace BetterStreams
 {
@@ -12,7 +13,7 @@ namespace BetterStreams
         private byte[] data;
         private int length;
         private ArrayPool<byte> pool;
-        private bool isDisposed;
+        private int isDisposed;
 
         public PooledMemoryStream()
             : this(ArrayPool<byte>.Shared)
@@ -39,17 +40,45 @@ namespace BetterStreams
         public override long Position { get; set; }
 
         public long Capacity => this.data?.Length ?? 0;
+
 #if NETCOREAPP || NET452
         public Span<byte> GetSpan()
         {
-            return this.data.AsSpan(0, this.length);
+            if (this.data != null)
+            {
+                return this.data.AsSpan(0, this.length);
+            }
+            else
+            {
+                return default;
+            }
         }
 
         public Memory<byte> GetMemory()
         {
-            return this.data.AsMemory(0, this.length);
+            if (this.data != null)
+            {
+                return this.data.AsMemory(0, this.length);
+            }
+            else
+            {
+                return default;
+            }
         }
 #endif
+
+        public bool TryGetBuffer(out ArraySegment<byte> buffer)
+        {
+            if (this.data != null)
+            {
+                buffer = new ArraySegment<byte>(this.data, 0, this.length);
+                return true;
+            }
+
+            buffer = default;
+            return false;
+        }
+
         public override void Flush()
         {
             this.AssertNotDisposed();
@@ -174,9 +203,8 @@ namespace BetterStreams
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (Interlocked.CompareExchange(ref this.isDisposed, 1, 0) == 0)
             {
-                this.isDisposed = true;
                 this.Position = 0;
                 this.length = 0;
 
@@ -203,10 +231,9 @@ namespace BetterStreams
             this.data = newData;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AssertNotDisposed()
         {
-            if (this.isDisposed)
+            if (this.isDisposed != 0)
             {
                 throw new ObjectDisposedException(nameof(PooledMemoryStream));
             }

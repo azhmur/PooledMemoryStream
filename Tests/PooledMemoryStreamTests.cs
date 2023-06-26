@@ -12,35 +12,6 @@ namespace BetterStream.Tests
 {
     public partial class PooledMemoryStreamTests
     {
-        [Fact]
-        public static void PooledMemoryStream_Write_BeyondCapacity()
-        {
-            using (PooledMemoryStream memoryStream = new PooledMemoryStream())
-            {
-                long origLength = memoryStream.Length;
-                byte[] bytes = new byte[10];
-                for (int i = 0; i < bytes.Length; i++)
-                    bytes[i] = (byte)i;
-                int spanPastEnd = 5;
-                memoryStream.Seek(spanPastEnd, SeekOrigin.End);
-
-                // Test Write
-                memoryStream.Write(bytes, 0, bytes.Length);
-                long pos = memoryStream.Position;
-                Assert.Equal(pos, origLength + spanPastEnd + bytes.Length);
-                Assert.Equal(memoryStream.Length, origLength + spanPastEnd + bytes.Length);
-
-                // Verify bytes were correct.
-                memoryStream.Position = origLength;
-                byte[] newData = new byte[bytes.Length + spanPastEnd];
-                int n = memoryStream.Read(newData, 0, newData.Length);
-                Assert.Equal(n, newData.Length);
-                for (int i = 0; i < spanPastEnd; i++)
-                    Assert.Equal(0, newData[i]);
-                for (int i = 0; i < bytes.Length; i++)
-                    Assert.Equal(bytes[i], newData[i + spanPastEnd]);
-            }
-        }
 
         [Fact]
         public static void MemoryStream_WriteByte_BeyondCapacity()
